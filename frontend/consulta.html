@@ -8,123 +8,123 @@
 
   <style>
     .consulta-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .consulta-header h2 {
-      margin:0;
+      margin: 0;
     }
 
     .btn-voltar {
-      width:auto;
-      margin-top:0;
-      background:#438fbe;
-      padding:10px 16px;
+      width: auto;
+      margin-top: 0;
+      background: #438fbe;
+      padding: 10px 16px;
     }
 
     .btn-voltar:hover {
-      background:#587181;
+      background: #587181;
     }
 
     .secao {
-      margin-top:20px;
-      padding-top:15px;
-      border-top:1px solid #ddd;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
     }
 
     .secao h3 {
-      margin-bottom:8px;
+      margin-bottom: 8px;
     }
 
     .grid {
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
     .grid > div {
-      min-width:0;
+      min-width: 0;
     }
 
     .acoes {
-      display:flex;
-      gap:10px;
-      margin-top:20px;
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
     }
 
     .acoes button {
-      margin-top:0;
+      margin-top: 0;
     }
 
     .btn-pdf {
-      background:#4fa9df;
-      font-weight:bold;
+      background: #4fa9df;
+      font-weight: bold;
     }
 
     .btn-pdf:hover {
-      background:#3f8dcc;
+      background: #3f8dcc;
     }
 
     .btn-salvar {
-      background:#3f98d0;
+      background: #3f98d0;
     }
 
     .info-paciente {
-      background:#eaf6ff;
-      border:1px solid #cfe7f8;
-      padding:12px 14px;
-      border-radius:8px;
-      margin-bottom:16px;
+      background: #eaf6ff;
+      border: 1px solid #cfe7f8;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
     }
 
     .campo-obrigatorio::after {
-      content:' *';
-      color:#e74c3c;
+      content: ' *';
+      color: #e74c3c;
     }
 
     @media (max-width: 650px) {
       .grid {
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
       }
 
       .consulta-header {
-        align-items:flex-start;
-        flex-direction:column;
+        align-items: flex-start;
+        flex-direction: column;
       }
 
       .btn-voltar {
-        width:100%;
+        width: 100%;
       }
 
       .acoes {
-        flex-direction:column;
+        flex-direction: column;
       }
     }
 
     @media print {
       body {
-        background:#eef9ff;
+        background: #eef9ff;
       }
 
       .container {
-        width:100%;
-        max-width:none;
-        margin:0;
-        box-shadow:none;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        box-shadow: none;
       }
 
       .no-print {
-        display:none !important;
+        display: none !important;
       }
 
       input,
       select,
       textarea {
-        border:1px solid #999;
+        border: 1px solid #999;
       }
     }
   </style>
@@ -412,11 +412,11 @@
       .replace(
         /[&<>"']/g,
         c => ({
-          '&':'&amp;',
-          '<':'&lt;',
-          '>':'&gt;',
-          '"':'&quot;',
-          "'":'&#39;'
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
         }[c])
       );
 
@@ -446,7 +446,7 @@
     ).value =
       new Date()
         .toISOString()
-        .slice(0,10);
+        .slice(0, 10);
 
 
     if (triagemParam) {
@@ -600,9 +600,9 @@
         await fetch(
           '/consulta',
           {
-            method:'POST',
+            method: 'POST',
 
-            headers:{
+            headers: {
               'Content-Type':
                 'application/json'
             },
@@ -790,19 +790,24 @@
       linhas
         .slice(1)
         .map(
-          ([l,v]) => `
+          ([l, v]) => `
             <div class="campo">
               <span class="label">
                 ${escapeHtml(l)}:
               </span>
               <br>
               ${escapeHtml(v)
-                .replace(/\n/g,'<br>')}
+                .replace(/\n/g, '<br>')}
             </div>
           `
         )
         .join('');
 
+
+    /*
+      ASSINATURA DO MÉDICO
+      Somente a linha e o texto.
+    */
 
     const assinaturaHTML = `
 
@@ -812,21 +817,6 @@
 
         <div class="titulo-assinatura">
           Assinatura do médico
-        </div>
-
-        <div class="nome-assinatura">
-          ${escapeHtml(
-            dados.medico ||
-            'Nome do médico'
-          )}
-        </div>
-
-        <div class="crm-assinatura">
-          CRM:
-          ${escapeHtml(
-            dados.crm ||
-            'Não informado'
-          )}
         </div>
 
       </div>
@@ -879,6 +869,8 @@
             font-weight: bold;
           }
 
+          /* ASSINATURA */
+
           .assinatura {
             margin-top: 55px;
             width: 320px;
@@ -896,17 +888,6 @@
 
           .titulo-assinatura {
             font-size: 13px;
-            margin-bottom: 6px;
-          }
-
-          .nome-assinatura {
-            font-weight: bold;
-            font-size: 14px;
-          }
-
-          .crm-assinatura {
-            font-size: 12px;
-            margin-top: 4px;
           }
 
           footer {
@@ -914,14 +895,6 @@
             text-align: center;
             color: #777;
             font-size: 12px;
-          }
-
-          @media print {
-
-            .no-print {
-              display: none;
-            }
-
           }
 
         </style>
