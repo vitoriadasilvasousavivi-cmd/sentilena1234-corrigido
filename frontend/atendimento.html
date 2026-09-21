@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<div class="container">
+<h2>Atendimento</h2>
+
+<input id="nome" placeholder="Nome">
+<input id="cpf" placeholder="CPF">
+
+<select id="tipo">
+  <option>Convenio</option>
+  <option>Particular</option>
+</select>
+
+<input type="file" id="foto">
+
+<button onclick="cadastrar()">Cadastrar</button>
+</div>
+
+<script>
+async function cadastrar() {
+  const nome = document.getElementById("nome").value.trim();
+  const cpf = document.getElementById("cpf").value.trim();
+  const tipo = document.getElementById("tipo").value;
+  const foto = document.getElementById("foto");
+
+  if (!nome) {
+    alert("Digite o nome do paciente.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/atendimento", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome, cpf, tipo })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.erro || "Erro ao cadastrar.");
+    alert("Paciente enviado para triagem com sucesso!");
+    document.getElementById("nome").value = "";
+    document.getElementById("cpf").value = "";
+    foto.value = "";
+  } catch (error) {
+    alert(error.message);
+  }
+}
+</script>
+</body>
+</html>

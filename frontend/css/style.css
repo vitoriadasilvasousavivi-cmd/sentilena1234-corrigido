@@ -1,0 +1,170 @@
+:root{
+  --primary:#5aa9e6;
+  --primary-dark:#3f8dcc;
+  --primary-soft:#eaf6ff;
+  --primary-lighter:#f5fbff;
+  --border:#cfe7f8;
+  --text:#24445a;
+  --muted:#6d8798;
+  --white:#ffffff;
+  --shadow:0 8px 24px rgba(64, 137, 182, .12);
+}
+
+*{box-sizing:border-box}
+
+body{
+  font-family:Arial, Helvetica, sans-serif;
+  background:linear-gradient(135deg,#f4fbff 0%,#eaf6ff 50%,#f8fcff 100%);
+  color:var(--text);
+  margin:0;
+  min-height:100vh;
+}
+
+.container{
+  width:90%;
+  max-width:900px;
+  margin:28px auto;
+  background:var(--white);
+  padding:24px;
+  border-radius:18px;
+  border:1px solid #e0f0fa;
+  box-shadow:var(--shadow);
+}
+
+h1,h2,h3{color:#2f6f9f}
+h2{margin-top:0}
+h3{margin-top:0}
+
+hr{border:0;border-top:1px solid var(--border);margin:24px 0}
+
+input,
+select,
+textarea,
+button{
+  width:100%;
+  padding:12px 14px;
+  margin-top:10px;
+  border-radius:10px;
+  border:1px solid #c9e2f2;
+  font-size:16px;
+  font-family:inherit;
+}
+
+input,select,textarea{background:#fbfeff;color:var(--text);outline:none}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(90,169,230,.14);
+}
+
+textarea{min-height:100px;resize:vertical}
+
+button{
+  background:linear-gradient(135deg,var(--primary),#78c5ef);
+  color:white;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  transition:.2s ease;
+  box-shadow:0 4px 10px rgba(90,169,230,.18);
+}
+button:hover{background:linear-gradient(135deg,var(--primary-dark),#63b5e7);transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button:disabled{opacity:.65;cursor:not-allowed;transform:none}
+
+.card{
+  border:1px solid var(--border);
+  padding:17px;
+  margin:15px 0;
+  border-radius:14px;
+  background:#eef9ff;
+  box-shadow:0 4px 14px rgba(64,137,182,.08);
+}
+.card h3{margin-bottom:10px}
+
+.verde{background:#69c69a;color:white;padding:5px 10px;border-radius:8px}
+.amarelo{background:#f2c95c;color:#5d4a0a;padding:5px 10px;border-radius:8px}
+.vermelho{background:#e87979;color:white;padding:5px 10px;border-radius:8px}
+
+@media(max-width:650px){
+  .container{width:94%;padding:18px;margin:16px auto}
+}
+
+/* ===== Identidade visual hospitalar Sentinela ===== */
+:root{
+  --hospital-blue:#5aaee6;
+  --hospital-blue-dark:#287fbd;
+  --hospital-blue-deep:#17689f;
+  --hospital-sky:#dff3ff;
+  --hospital-sky-2:#edf9ff;
+  --hospital-surface:#e9f6fd;
+  --hospital-border:#b9ddf2;
+  --hospital-text:#214b68;
+}
+
+body{
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255,255,255,.65), transparent 28%),
+    linear-gradient(135deg,#d9f1ff 0%,#eaf8ff 48%,#cceaff 100%) !important;
+  color:var(--hospital-text) !important;
+}
+
+.container{
+  background:linear-gradient(145deg,#f4fbff 0%,#e5f5fd 100%) !important;
+  border:1px solid var(--hospital-border) !important;
+  box-shadow:0 12px 30px rgba(38,116,165,.16) !important;
+}
+
+h1,h2,h3{color:var(--hospital-blue-deep) !important}
+hr{border-top-color:var(--hospital-border) !important}
+
+input,select,textarea{
+  background:#f4fbff !important;
+  color:var(--hospital-text) !important;
+  border-color:#b9dcef !important;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--hospital-blue) !important;
+  box-shadow:0 0 0 3px rgba(90,174,230,.16) !important;
+}
+
+button{
+  background:linear-gradient(135deg,#55aee8,#318dcc) !important;
+  box-shadow:0 5px 12px rgba(45,132,190,.18) !important;
+}
+button:hover{background:linear-gradient(135deg,#318dcc,#217bb5) !important}
+
+.card{
+  background:linear-gradient(145deg,#f5fcff,#e4f4fc) !important;
+  border-color:#b9ddf2 !important;
+  box-shadow:0 6px 16px rgba(43,126,174,.10) !important;
+}
+
+/* Áreas internas que antes ficavam brancas */
+.pacientes-fila,.consultorio-input,.info-paciente{
+  background:linear-gradient(145deg,#e8f6fd,#d9effb) !important;
+  border-color:#b5dbf0 !important;
+}
+.fila-item{
+  background:#eef9ff !important;
+  border-color:#c4e2f2 !important;
+}
+
+label{color:#285a77}
+
+/* Aparência de sistema hospitalar */
+.container::before{
+  content:"🏥  SENTINELA • SISTEMA HOSPITALAR";
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1px;
+  color:#277eb6;
+  background:#d9f1ff;
+  border:1px solid #b9ddf2;
+  border-radius:10px;
+  padding:8px 12px;
+  margin-bottom:16px;
+}
+
+@media print{.container::before{display:none!important}}

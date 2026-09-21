@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .btn-tv {
+      background: #5aa9e6;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .btn-tv:hover { background: #3f8dcc; }
+    .btn-abrir-tv {
+      background: #6bb7e8;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-abrir-tv:hover { background: #3f8dcc; }
+    .consultorio-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      background: #eaf6ff;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid #cfe7f8;
+    }
+    .consultorio-input label { font-weight: bold; }
+    .consultorio-input input {
+      width: 60px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <!-- Cabeçalho com botão da TV -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="margin:0;">🩺 Painel Médico</h2>
+    <button class="btn-abrir-tv" onclick="window.open('tv.html','_blank')">📺 Abrir Tela da TV</button>
+  </div>
+
+  <!-- Campo criado para informar o consultório e chamar o paciente na TV -->
+  <div class="consultorio-input">
+    <label>Meu Consultório:</label>
+    <input type="text" id="consultorio-num" value="01">
+    <span style="color:#52748a; font-size:13px;">Este número será exibido na TV ao chamar o paciente.</span>
+  </div>
+
+  <div id="triagens"></div>
+
+  <hr>
+
+  <div style="margin-top:20px;">
+    <h3>Consulta</h3>
+    <p style="color:#52748a; margin:8px 0 12px;">Preencha a consulta médica e gere o documento de alta do paciente.</p>
+    <button type="button" onclick="abrirConsulta()">🩺 Abrir Consulta</button>
+  </div>
+</div>
+
+<script>
+
+let triagensCarregadas = [];
+
+function carregar() {
+  fetch("/triagens")
+    .then(r => r.json())
+    .then(data => {
+      triagensCarregadas = data;
+
+      const div = document.getElementById("triagens");
+      div.innerHTML = "";
+
+      if (data.length === 0) {
+        div.innerHTML = "<p style='color:#6d8ea3; text-align:center;'>Nenhum paciente na fila.</p>";
+        return;
+      }
+
+      data.forEach((t, index) => {
+        div.innerHTML += `
+          <div class="card">
+            <h3>${t.nome}</h3>
+            <p><b>Sintoma:</b> ${t.sintoma || "Não informado"}</p>
+            <p><b>Temperatura:</b> ${t.temperatura || "Não informada"}°C</p>
+            <p><span class="${t.risco}">${t.risco}</span></p>
+            <p><b>Alergia:</b> ${t.alergia || "Nenhuma"}</p>
+            <p><b>Observação:</b> ${t.observacao || "Nenhuma"}</p>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button onclick="selecionar(${index})">Atender</button>
+              <button class="btn-tv btn-chamar-tv" data-index="${index}">📺 Chamar na TV</button>
+            </div>
+          </div>
+        `;
+      });
+
+      div.querySelectorAll(".btn-chamar-tv").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const paciente = triagensCarregadas[Number(btn.dataset.index)]?.nome;
+          if (paciente) chamarNaTV(paciente);
+        });
+      });
+    });
+}
+
+// Função criada para enviar o nome do paciente para a TV quando ele for chamado no consultório.
+async function chamarNaTV(nome) {
+  const consultorio = document.getElementById("consultorio-num").value.trim() || "01";
+  try {
+    const response = await fetch("/tv/chamar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ localTipo: "CONSULTÓRIO", localNumero: consultorio, paciente: nome })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.erro || "Não foi possível chamar.");
+    alert("✅ " + nome + " foi chamado na TV para o Consultório " + consultorio + "!");
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function selecionar(index) {
+  const t = triagensCarregadas[index];
+  if (!t) return;
+  localStorage.setItem("sentinelaPaciente", t.nome || "");
+  const dados = encodeURIComponent(JSON.stringify(t));
+  window.location.href = `consulta.html?paciente=${encodeURIComponent(t.nome || "")}&triagem=${dados}`;
+}
+
+function abrirConsulta() {
+  const paciente = document.getElementById("paciente")?.value?.trim() || localStorage.getItem("sentinelaPaciente") || "";
+  window.location.href = paciente ? `consulta.html?paciente=${encodeURIComponent(paciente)}` : "consulta.html";
+}
+
+carregar();
+
+// Atualiza a fila automaticamente a cada 10 segundos.
+setInterval(carregar, 10000);
+
+</script>
+
+</body>
+</html>

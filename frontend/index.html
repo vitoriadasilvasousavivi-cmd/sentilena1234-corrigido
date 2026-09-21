@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sentinela</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      background: linear-gradient(
+        135deg,
+        #6bb7e8,
+        #8bcff2,
+        #3f8dcc
+      );
+    }
+
+    .container {
+      width: 380px;
+      padding: 35px;
+
+      background: linear-gradient(145deg,#f3fbff,#dff2fc);
+
+      border-radius: 24px;
+
+      box-shadow: 0 15px 40px rgba(33,112,158,.20);
+
+      text-align: center;
+    }
+
+    .logo {
+      width: 240px;
+      max-width: 100%;
+      height: auto;
+
+      display: block;
+
+      margin: 0 auto 25px;
+    }
+
+    input {
+      width: 100%;
+
+      padding: 14px 16px;
+
+      margin-bottom: 16px;
+
+      border: 2px solid #cfe7f8;
+
+      border-radius: 10px;
+
+      font-size: 15px;
+
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #6bb7e8;
+
+      box-shadow: 0 0 8px rgba(107,183,232,0.25);
+    }
+
+    input::placeholder {
+      color: #7b95a6;
+    }
+
+    button {
+      width: 100%;
+
+      padding: 14px;
+
+      border: none;
+
+      border-radius: 10px;
+
+      background: linear-gradient(
+        135deg,
+        #6bb7e8,
+        #5aa9e6
+      );
+
+      color: white;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+
+      box-shadow: 0 8px 20px rgba(90,169,230,0.35);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 450px) {
+
+      .container {
+        width: 90%;
+        padding: 30px 25px;
+      }
+
+      .logo {
+        width: 210px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <img
+      src="img/ChatGPT Image 17_08_2026, 11_22_01.png"
+      alt="Sentilena"
+      class="logo"
+    >
+
+    <input
+      id="usuario"
+      type="text"
+      placeholder="Usuário"
+    >
+
+    <input
+      id="senha"
+      type="password"
+      placeholder="Senha"
+    >
+
+    <button onclick="login()">
+      Entrar
+    </button>
+
+  </div>
+
+
+  <script>
+
+    function login() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const senha = document.getElementById("senha").value;
+      const botao = document.querySelector("button");
+
+      if (!usuario || !senha) {
+        alert("Digite usuário e senha.");
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = "Entrando...";
+
+      fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, senha })
+      })
+      .then(async response => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.erro || "Não foi possível entrar.");
+        return data;
+      })
+      .then(data => {
+        const paginas = {
+          triagem: "triagem.html",
+          medico: "medico.html",
+          atendimento: "atendimento.html"
+        };
+        if (paginas[data.tipo]) window.location.href = paginas[data.tipo];
+        else throw new Error("Tipo de usuário inválido.");
+      })
+      .catch(error => alert(error.message))
+      .finally(() => {
+        botao.disabled = false;
+        botao.textContent = "Entrar";
+      });
+    }
+
+  </script>
+
+</body>
+</html>
