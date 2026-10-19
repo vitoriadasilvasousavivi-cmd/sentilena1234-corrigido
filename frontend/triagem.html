@@ -103,13 +103,16 @@
     background: #3278a4;
   }
 
+  /* RESULTADO DA ANÁLISE */
+
   #resultado {
     display: none;
     margin: 16px 0;
-    padding: 16px;
+    padding: 20px;
     border-radius: 8px;
     border: 1px solid #cfe0eb;
-    background: #f6fbff;
+    background-color: #f5fbff !important;
+    color: #263746 !important;
   }
 
   #resultado.visivel {
@@ -128,18 +131,40 @@
     border-left: 6px solid #d94343;
   }
 
+  /* Impede o CSS geral de deixar a descrição branca */
+
+  #resultado h4,
+  #resultado strong,
+  #resultado p,
+  #resultado li,
+  #resultado ul {
+    color: #263746 !important;
+  }
+
   #resultado h4 {
-    margin: 0 0 8px;
+    margin: 0 0 12px;
+    font-size: 20px;
+  }
+
+  #resultado strong {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 16px;
   }
 
   #resultado ul {
     margin-top: 6px;
+    padding-left: 28px;
   }
 
-  .aviso-prototipo {
+  #resultado li {
+    margin-bottom: 4px;
+  }
+
+  #resultado .aviso-prototipo {
+    color: #526575 !important;
     font-size: 12px;
-    color: #555;
-    margin-top: 12px;
+    margin-top: 16px;
   }
 
   @media (max-width: 600px) {
@@ -171,6 +196,8 @@
 
   </div>
 
+  <!-- FILA DE PACIENTES -->
+
   <div class="pacientes-fila">
 
     <h3>
@@ -196,6 +223,8 @@
   </div>
 
   <hr>
+
+  <!-- FORMULÁRIO DE TRIAGEM -->
 
   <h3>Formulário de Triagem</h3>
 
@@ -255,7 +284,8 @@
 
   </div>
 
-  <!-- O resultado só aparece quando clicar em Analisar -->
+  <!-- A DESCRIÇÃO SÓ APARECE APÓS CLICAR EM ANALISAR -->
+
   <section id="resultado" aria-live="polite"></section>
 
 </div>
@@ -271,13 +301,13 @@ function carregarPacientes() {
 
   fetch("/pacientes")
 
-    .then(r => {
+    .then(response => {
 
-      if (!r.ok) {
+      if (!response.ok) {
         throw new Error("Falha ao carregar pacientes.");
       }
 
-      return r.json();
+      return response.json();
 
     })
 
@@ -286,13 +316,13 @@ function carregarPacientes() {
       const div = document.getElementById("fila-pacientes");
 
       const fila = pacientes.filter(
-        p => p.status === "triagem"
+        paciente => paciente.status === "triagem"
       );
 
       if (fila.length === 0) {
 
         div.innerHTML =
-          "<p style='color:#6d8ea3; text-align:center;'>Nenhum paciente aguardando.</p>";
+          "<p style='color:#6d8ea3;text-align:center;'>Nenhum paciente aguardando.</p>";
 
         return;
 
@@ -300,7 +330,7 @@ function carregarPacientes() {
 
       div.innerHTML = "";
 
-      fila.forEach(p => {
+      fila.forEach(paciente => {
 
         const item = document.createElement("div");
         item.className = "fila-item";
@@ -308,12 +338,12 @@ function carregarPacientes() {
         const info = document.createElement("div");
 
         const nome = document.createElement("strong");
-        nome.textContent = p.nome || "Sem nome";
+        nome.textContent = paciente.nome || "Sem nome";
 
         const detalhes = document.createElement("small");
 
         detalhes.textContent =
-          `CPF: ${p.cpf || "—"} | Tipo: ${p.tipo || "—"}`;
+          `CPF: ${paciente.cpf || "—"} | Tipo: ${paciente.tipo || "—"}`;
 
         info.appendChild(nome);
         info.appendChild(document.createElement("br"));
@@ -325,7 +355,7 @@ function carregarPacientes() {
         botao.textContent = "📺 Chamar na TV";
 
         botao.addEventListener("click", () => {
-          chamarNaTV(p.nome);
+          chamarNaTV(paciente.nome);
         });
 
         item.appendChild(info);
@@ -372,9 +402,11 @@ async function chamarNaTV(nome) {
     const data = await response.json();
 
     if (!response.ok) {
+
       throw new Error(
         data.erro || "Não foi possível chamar."
       );
+
     }
 
     alert(
@@ -391,7 +423,7 @@ async function chamarNaTV(nome) {
 }
 
 
-// ANALISAR OS SINAIS E CLASSIFICAR O RISCO
+// ANALISAR OS DADOS DA TRIAGEM
 
 function obterAnalise(
   sintoma,
@@ -422,6 +454,8 @@ function obterAnalise(
   const cuidados = [];
   const acoes = [];
 
+
+  // CLASSIFICAÇÃO AUTOMÁTICA DO PROTÓTIPO
 
   if (
     Number.isFinite(temperatura) &&
@@ -593,6 +627,8 @@ function obterAnalise(
   }
 
 
+  // CONSIDERAR ALERGIAS
+
   if (alergia) {
 
     motivos.push(
@@ -606,6 +642,8 @@ function obterAnalise(
 
   }
 
+
+  // CONSIDERAR OBSERVAÇÕES
 
   if (observacao) {
 
@@ -627,7 +665,24 @@ function obterAnalise(
 }
 
 
-// MOSTRAR A ANÁLISE SOMENTE QUANDO CLICAR NO BOTÃO
+// ESCAPAR TEXTO PARA EVITAR INTERPRETAÇÃO COMO HTML
+
+function escaparHTML(valor) {
+
+  return String(valor).replace(/[&<>"']/g, caractere => ({
+
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+
+  }[caractere]));
+
+}
+
+
+// EXIBIR A ANÁLISE SOMENTE AO CLICAR NO BOTÃO
 
 function analisarTriagem() {
 
@@ -742,23 +797,6 @@ function analisarTriagem() {
 }
 
 
-// EVITAR QUE TEXTOS INSERIDOS SEJAM INTERPRETADOS COMO HTML
-
-function escaparHTML(valor) {
-
-  return String(valor).replace(/[&<>"']/g, caractere => ({
-
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-
-  }[caractere]));
-
-}
-
-
 // SALVAR TRIAGEM
 
 async function salvar() {
@@ -800,7 +838,8 @@ async function salvar() {
   }
 
 
-  // Calcula os dados para salvar, mas não mostra a análise automaticamente.
+  // Calcula para salvar, mas não exibe a descrição automaticamente.
+
   const analise = analiseAtual || obterAnalise(
     sintoma,
     temperatura === null ? NaN : temperatura,
@@ -867,6 +906,8 @@ async function salvar() {
 
     document.getElementById("observacao").value = "";
 
+
+    // Limpar o resultado depois de salvar.
 
     document.getElementById("resultado").className = "";
 
